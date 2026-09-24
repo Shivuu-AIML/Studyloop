@@ -3,7 +3,7 @@ import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
 import './QuizModal.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const QuizIcon = ({ className }) => (
   <svg

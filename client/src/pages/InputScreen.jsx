@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './InputScreen.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const clamp = (n) => Math.max(1, Math.min(12, n));
 

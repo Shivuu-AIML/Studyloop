@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ErrorState from '../components/ErrorState';
 import './ReviewScreen.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const clamp = (n) => Math.max(1, Math.min(12, Number(n) || 1));
 

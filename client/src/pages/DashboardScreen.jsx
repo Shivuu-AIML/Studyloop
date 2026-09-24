@@ -12,7 +12,7 @@ import MyPlanScreen from './MyPlanScreen';
 import SettingsScreen from './SettingsScreen';
 import './DashboardScreen.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_URL = import.meta.env.VITE_API_URL || '';
 const MS_DAY = 86400000;
 const RING_C = 389.6;
 const SIDE_RING_C = 150.8;

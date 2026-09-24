@@ -1,23 +1,20 @@
 require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
 const connectDB = require('./config/db');
-const planRoutes = require('./routes/planRoutes');
+const createApp = require('./app');
 
-const app = express();
+const boot = async () => {
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error('MongoDB connection failed:', err.message);
+    process.exit(1);
+  }
 
-app.use(cors());
-app.use(express.json());
+  const app = createApp();
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`StudyLoop API listening on port ${PORT}`);
+  });
+};
 
-connectDB();
-
-app.use('/api/plans', planRoutes);
-
-app.get('/', (req, res) => {
-  res.json({ status: 'StudyLoop API running' });
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`StudyLoop API listening on port ${PORT}`);
-});
+boot();
