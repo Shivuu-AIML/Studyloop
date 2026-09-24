@@ -1,7 +1,7 @@
 {
   "installCommand": "npm ci && (test -f client/package.json && npm --prefix client ci || true)",
-  "buildCommand": "(test -d client && npm --prefix client run build) || npm run build",
-  "outputDirectory": "client/dist",
+  "buildCommand": "(test -d client && npm --prefix client run build || npm run build)",
+  "outputDirectory": "dist",
   "functions": {
     "api/index.js": {
       "memory": 1024,
