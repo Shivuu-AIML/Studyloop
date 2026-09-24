@@ -23,7 +23,7 @@ const parseLiveTopics = (text, hasNewline) => {
   }
 
   return text
-    .split(/(?<=\.)\s+(?=[A-Z])/)
+    .split(/\.\s+(?=[A-Z])/)
     .map((seg) =>
       seg
         .replace(/^\s*unit\s*\d+\s*[:.-]?\s*/i, '')
