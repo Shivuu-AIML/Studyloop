@@ -18,6 +18,7 @@ const dayScheduleSchema = new mongoose.Schema({
     {
       topicId: { type: mongoose.Schema.Types.ObjectId },
       topicName: { type: String, required: true },
+      subject: { type: String, default: 'General' },
       estHours: { type: Number, required: true },
       status: {
         type: String,

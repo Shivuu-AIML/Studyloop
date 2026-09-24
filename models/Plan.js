@@ -28,6 +28,7 @@ const planSchema = new mongoose.Schema({
   topics: [
     {
       name: { type: String, required: true },
+      subject: { type: String, required: true, default: 'General' },
       estHours: { type: Number, required: true },
       difficulty: {
         type: Number,

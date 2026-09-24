@@ -1,20 +1,22 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import './InputScreen.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
 
-export default function InputScreen() {
-  const navigate = useNavigate();
+const clamp = (n) => Math.max(1, Math.min(12, n));
 
-  const [syllabusText, setSyllabusText] = useState('');
-  const [examDate, setExamDate] = useState('');
-  const [hoursPerDay, setHoursPerDay] = useState(2);
+export default function InputScreen({
+  syllabusText,
+  onSyllabusChange,
+  examDate,
+  setExamDate,
+  hoursPerDay,
+  setHoursPerDay,
+  onPlanReady,
+}) {
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const clamp = (n) => Math.max(1, Math.min(12, n));
 
   const increment = () => setHoursPerDay((h) => clamp(h + 1));
   const decrement = () => setHoursPerDay((h) => clamp(h - 1));
@@ -45,17 +47,39 @@ export default function InputScreen() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/plans/extract`, {
+      const extractRes = await fetch(`${API_URL}/api/plans/extract`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ syllabusText }),
       });
+      if (!extractRes.ok) throw new Error('request failed');
+      const { topics } = await extractRes.json();
 
-      if (!res.ok) throw new Error('request failed');
+      const createRes = await fetch(`${API_URL}/api/plans`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          syllabusText,
+          topics,
+          examDate,
+          hoursPerDay,
+          daysPerWeek: 7,
+        }),
+      });
+      if (!createRes.ok) throw new Error('request failed');
+      const { plan } = await createRes.json();
 
-      const { topics } = await res.json();
-      console.log('Extracted topics:', topics);
-      navigate('/review');
+      localStorage.setItem('studyloop:lastPlanId', plan._id);
+      localStorage.setItem(
+        `studyloop:plan:${plan._id}`,
+        JSON.stringify({
+          examDate: plan.examDate,
+          hoursPerDay: plan.hoursPerDay,
+          daysPerWeek: plan.daysPerWeek,
+        })
+      );
+
+      onPlanReady?.(plan, plan._id);
     } catch {
       setApiError(
         "Couldn't generate your plan. Check your connection and try again."
@@ -66,12 +90,7 @@ export default function InputScreen() {
   };
 
   return (
-    <main className="input-screen">
-      <h1 className="input-screen__title">StudyLoop</h1>
-      <p className="input-screen__subtitle">
-        Paste your syllabus, set a date, and let&nbsp;AI&nbsp;plan&nbsp;your&nbsp;study&nbsp;time.
-      </p>
-
+    <section className="input-screen input-screen__grid">
       <form className="input-screen__form" onSubmit={handleSubmit} noValidate>
         <div className="field">
           <label className="field__label" htmlFor="syllabus">
@@ -84,7 +103,7 @@ export default function InputScreen() {
               placeholder="Paste or type your syllabus here…"
               value={syllabusText}
               onChange={(e) => {
-                setSyllabusText(e.target.value);
+                onSyllabusChange(e.target.value);
                 if (errors.syllabusText) setErrors((prev) => ({ ...prev, syllabusText: '' }));
               }}
               rows={10}
@@ -151,6 +170,6 @@ export default function InputScreen() {
           {loading ? 'Generating…' : 'Generate study plan'}
         </button>
       </form>
-    </main>
+    </section>
   );
 }

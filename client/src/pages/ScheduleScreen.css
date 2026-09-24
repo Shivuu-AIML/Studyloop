@@ -1,0 +1,130 @@
+/* ── Schedule screen ─────────────────────────────────────── */
+.sc {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.sc__cta {
+  display: flex;
+  justify-content: center;
+}
+
+.sc__list {
+  display: grid;
+  gap: 16px;
+}
+
+.sc__day {
+  padding: var(--card-pad);
+  min-width: 0;
+}
+
+.sc__day-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.sc__day-head .dt {
+  flex: none;
+}
+
+.sc__day-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.sc__day-meta b {
+  display: block;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.sc__day-meta span {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.sc__status {
+  flex: none;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+
+.sc__status--done {
+  background: #e7f8ee;
+  color: #16a34a;
+}
+
+.sc__status--skipped {
+  background: var(--soft);
+  color: var(--mute);
+}
+
+.sc__status--today {
+  background: var(--blue);
+  color: #fff;
+}
+
+.sc__status--overdue {
+  background: #fff1e0;
+  color: #b45309;
+}
+
+.sc__status--upcoming {
+  background: var(--soft);
+  color: var(--blue);
+}
+
+.sc__tasks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.sc__tk {
+  margin-bottom: 0;
+  cursor: default;
+}
+
+.sc__tk:hover {
+  border-color: transparent;
+}
+
+.sc__tk--done .bx {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+
+.sc__tk--done .bx svg {
+  opacity: 1;
+}
+
+.sc__tk--done .tt {
+  text-decoration: line-through;
+  color: var(--mute);
+}
+
+.sc__empty-day {
+  margin: 0;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+@media (max-width: 560px) {
+  .sc__day-head {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .sc__status {
+    margin-left: 66px;
+  }
+}

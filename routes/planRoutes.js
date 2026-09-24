@@ -1,7 +1,7 @@
 const express = require('express');
 const Plan = require('../models/Plan');
 const DaySchedule = require('../models/DaySchedule');
-const { extractTopics } = require('../services/geminiService');
+const { extractTopics, generateQuiz } = require('../services/geminiService');
 const { buildSchedule, reshuffle } = require('../services/schedulerService');
 
 const router = express.Router();
@@ -15,6 +15,20 @@ router.post('/extract', async (req, res) => {
     const topics = await extractTopics(syllabusText);
     res.json({ topics });
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/quiz', async (req, res) => {
+  try {
+    const { topicName, subject, difficulty } = req.body;
+    if (!topicName || !topicName.trim()) {
+      return res.status(400).json({ error: 'topicName is required' });
+    }
+    const questions = await generateQuiz(topicName.trim(), subject, difficulty);
+    res.json({ questions });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -47,6 +61,7 @@ router.post('/', async (req, res) => {
         return {
           topicId: topic ? topic._id : task.topicId,
           topicName: task.topicName,
+          subject: task.subject || (topic && topic.subject) || 'General',
           estHours: task.estHours,
           status: task.status,
         };
@@ -92,9 +107,23 @@ router.patch('/:id/day/:dayIndex', async (req, res) => {
     if (!target) return res.status(404).json({ error: 'Day not found' });
 
     if (status === 'skipped') {
-      const updated = reshuffle(days.map((d) => d.toObject()), dayIndex, plan.hoursPerDay);
+      const updated = reshuffle(
+        days.map((d) => d.toObject()),
+        dayIndex,
+        plan.hoursPerDay,
+        plan.examDate
+      );
       for (const day of updated) {
-        await DaySchedule.findByIdAndUpdate(day._id, { tasks: day.tasks });
+        if (day._id) {
+          await DaySchedule.findByIdAndUpdate(day._id, { tasks: day.tasks });
+        } else {
+          await DaySchedule.create({
+            planId: id,
+            date: day.date,
+            dayIndex: day.dayIndex,
+            tasks: day.tasks,
+          });
+        }
       }
     } else {
       target.tasks = target.tasks.map((t) => ({ ...t.toObject(), status: 'done' }));

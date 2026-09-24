@@ -1,55 +1,24 @@
-/* ── Tokens ─────────────────────────────────────────────── */
-:root {
-  --paper: #F7F3E8;
-  --ink: #23291F;
-  --ink-soft: #565C4E;
-  --pine: #2F4A3D;
-  --pine-dark: #223529;
-  --moss: #7C9A7E;
-  --marigold: #D9A441;
-  --rule: #E3DCC6;
-}
+/* ── Setup form (child section inside HomeScreen's glass shell) ── */
 
-/* ── Base reset for this page ───────────────────────────── */
-.input-screen {
-  background: var(--paper);
-  min-height: 100vh;
+.input-screen__grid {
+  width: 100%;
+  max-width: 720px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 64px 24px 96px;
-  box-sizing: border-box;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--card-r);
+  box-shadow: var(--sh);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  padding: 28px;
 }
 
-/* ── Typography ─────────────────────────────────────────── */
-.input-screen__title {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-weight: 400;
-  font-size: 48px;
-  line-height: 1.1;
-  color: var(--ink);
-  margin: 0 0 8px;
-  letter-spacing: -0.5px;
-}
-
-.input-screen__subtitle {
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--ink-soft);
-  margin: 0 0 40px;
-  text-align: center;
-  max-width: 380px;
-}
-
-/* ── Form layout ────────────────────────────────────────── */
 .input-screen__form {
   width: 100%;
-  max-width: 600px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 22px;
 }
 
 /* ── Field group ────────────────────────────────────────── */
@@ -60,92 +29,58 @@
 }
 
 .field__label {
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  font-weight: 500;
-  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 11px;
   line-height: 1;
   color: var(--ink);
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.9px;
 }
 
 .field__input,
 .field__textarea {
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 15px;
   line-height: 1.5;
   color: var(--ink);
-  background: transparent;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
   padding: 12px 14px;
   outline: none;
-  transition: border-color 0.15s;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .field__input:focus,
 .field__textarea:focus {
-  border-color: var(--moss);
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--soft);
 }
 
 .field__input--error,
 .field__textarea--error {
-  border-color: #b54a3a;
-}
-
-.field__input {
-  width: 100%;
-}
-
-/* ── Ruled-notebook textarea ────────────────────────────── */
-.field__textarea-wrap {
-  position: relative;
+  border-color: #d64545;
 }
 
 .field__textarea {
-  width: 100%;
-  min-height: 240px;
+  min-height: 200px;
   resize: vertical;
-  padding-left: 18px;
-  border-left: 3px solid var(--moss);
-  background-color: transparent;
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 31px,
-    var(--rule) 31px,
-    var(--rule) 32px
-  );
-  background-size: 100% 32px;
-  background-position: 0 12px;
-  line-height: 32px;
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  font-size: 15px;
 }
 
 .field__textarea::placeholder {
-  color: var(--ink-soft);
-  opacity: 0.6;
+  color: var(--mute);
+  opacity: 0.7;
 }
 
-/* ── Row layout for date + stepper ──────────────────────── */
-.field-row {
-  display: flex;
-  gap: 24px;
-}
-
-.field-row .field {
-  flex: 1;
-}
-
-/* ── Error text ─────────────────────────────────────────── */
 .field__error {
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  font-weight: 400;
+  font-family: var(--font);
+  font-weight: 500;
   font-size: 13px;
   line-height: 1.4;
-  color: #b54a3a;
+  color: #d64545;
   margin: 0;
 }
 
@@ -153,98 +88,93 @@
   text-align: center;
 }
 
+/* ── Row layout for date + stepper ──────────────────────── */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
 /* ── Stepper ────────────────────────────────────────────── */
 .stepper {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  overflow: hidden;
+  gap: 4px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 4px;
   align-self: flex-start;
 }
 
 .stepper__btn {
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  font-weight: 600;
-  font-size: 18px;
-  width: 44px;
-  height: 44px;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 16px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
-  border: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 11px;
   color: var(--ink);
   cursor: pointer;
-  transition: background-color 0.15s;
   user-select: none;
+  outline: none;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .stepper__btn:hover {
-  background-color: var(--rule);
+  background: var(--soft);
+  color: var(--blue);
 }
 
-.stepper__btn:active {
-  background-color: #d5ceba;
+.stepper__btn:focus-visible {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--soft);
 }
 
 .stepper__value {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-weight: 500;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 15px;
   min-width: 40px;
   text-align: center;
   color: var(--ink);
-  border-left: 1px solid var(--rule);
-  border-right: 1px solid var(--rule);
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* ── CTA button ─────────────────────────────────────────── */
+/* ── CTA button (glass, matches review screen) ──────────── */
 .cta-btn {
-  font-family: 'Instrument Sans', system-ui, sans-serif;
-  font-weight: 600;
-  font-size: 16px;
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 15px;
   line-height: 1;
-  color: var(--paper);
-  background: var(--pine);
+  color: #fff;
+  background: linear-gradient(135deg, #4C8BFF, #2450E6);
   border: none;
-  border-radius: 4px;
-  padding: 16px 32px;
+  border-radius: 14px;
+  padding: 16px 24px;
   cursor: pointer;
-  position: relative;
-  transition: background-color 0.15s;
-  margin-top: 8px;
   width: 100%;
-}
-
-.cta-btn::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: 6px;
-  width: 0;
-  height: 2px;
-  background: var(--marigold);
-  border-radius: 1px;
-  transition: width 0.25s ease, left 0.25s ease;
-  pointer-events: none;
+  box-shadow: 0 8px 18px rgba(47, 107, 255, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 
 .cta-btn:hover:not(:disabled) {
-  background: var(--pine-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(47, 107, 255, 0.4);
 }
 
-.cta-btn:hover:not(:disabled)::after {
-  width: 60%;
-  left: 20%;
+.cta-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 6px 14px rgba(47, 107, 255, 0.3);
 }
 
 .cta-btn:focus-visible {
-  outline: 3px solid var(--marigold);
+  outline: 3px solid var(--sky);
   outline-offset: 2px;
 }
 
@@ -255,16 +185,12 @@
 
 /* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .input-screen {
-    padding: 40px 20px 64px;
-  }
-
-  .input-screen__title {
-    font-size: 36px;
+  .input-screen__grid {
+    padding: 22px;
   }
 
   .field-row {
-    flex-direction: column;
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }

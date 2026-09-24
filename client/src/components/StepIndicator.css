@@ -1,0 +1,87 @@
+/* ── Step indicator ─────────────────────────────────────── */
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.step-indicator__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.step-indicator__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.step-indicator__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.step-indicator__label {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.1px;
+}
+
+/* ── States ─────────────────────────────────────────────── */
+.step-indicator__item--current .step-indicator__dot {
+  background: var(--blue);
+  box-shadow: 0 0 0 4px var(--soft);
+}
+
+.step-indicator__item--current .step-indicator__label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.step-indicator__item--done .step-indicator__dot {
+  background: var(--blue);
+  opacity: 0.45;
+}
+
+.step-indicator__item--done .step-indicator__label {
+  color: var(--mute);
+}
+
+.step-indicator__item--upcoming .step-indicator__dot {
+  background: var(--line);
+}
+
+.step-indicator__item--upcoming .step-indicator__label {
+  color: var(--mute);
+  opacity: 0.7;
+}
+
+/* Connector line between steps */
+.step-indicator__line {
+  width: 24px;
+  height: 1px;
+  background: var(--line);
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .step-indicator {
+    padding: 10px 20px;
+  }
+
+  .step-indicator__line {
+    width: 16px;
+  }
+
+  .step-indicator__label {
+    font-size: 11px;
+  }
+}

@@ -6,11 +6,30 @@
   padding: 0;
 }
 
+html {
+  scroll-padding-top: env(safe-area-inset-top, 0px);
+}
+
 body {
   margin: 0;
-  background: #F7F3E8;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #F0F5FF 0%, #E6EEFF 100%);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14.5px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+svg {
+  display: block;
 }
 
 #root {

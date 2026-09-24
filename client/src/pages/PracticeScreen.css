@@ -1,0 +1,248 @@
+/* ── Practice / Quiz screen ─────────────────────────────── */
+.ps__tabs {
+  display: inline-flex;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.ps__tab {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--mute);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.ps__tab:hover {
+  color: var(--blue);
+}
+
+.ps__tab--on {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(47, 107, 255, 0.35);
+}
+
+.ps__tab--on:hover {
+  color: #fff;
+}
+
+.ps__panel h3 {
+  margin: 0 0 16px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+/* Mode 1 — topic picker */
+.ps__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ps__pick {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.ps__pick:hover {
+  border-color: var(--blue);
+  background: var(--soft);
+}
+
+.ps__pick-txt {
+  min-width: 0;
+}
+
+.ps__pick-txt b {
+  display: block;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.ps__pick-txt small {
+  display: block;
+  margin-top: 2px;
+  color: var(--mute);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.ps__pick-go {
+  flex: none;
+  font-weight: 800;
+  font-size: 12.5px;
+  color: var(--blue);
+}
+
+/* Mode 2 — custom topic form */
+.ps__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 520px;
+}
+
+.ps__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ps__label {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.ps__opt {
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.ps__input {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ps__input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--soft);
+}
+
+.ps__input--error {
+  border-color: #d64545;
+}
+
+.ps__input::placeholder {
+  color: var(--mute);
+  opacity: 0.7;
+}
+
+.ps__error {
+  margin: 0;
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #d64545;
+}
+
+/* Difficulty segmented control (matches app convention) */
+.difficulty {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  align-self: flex-start;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 4px;
+}
+
+.difficulty__btn {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 12px;
+  width: 34px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 11px;
+  color: var(--mute);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.difficulty__btn:hover {
+  background-color: var(--soft);
+  color: var(--blue);
+}
+
+.difficulty__btn--on {
+  background: var(--blue);
+  color: #fff;
+}
+
+.difficulty__btn--on:hover {
+  background: var(--deep);
+  color: #fff;
+}
+
+/* CTA (matches app convention) */
+.ps__form .cta-btn {
+  font-family: var(--font);
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1;
+  color: #fff;
+  background: linear-gradient(135deg, #4C8BFF, #2450E6);
+  border: none;
+  border-radius: 14px;
+  padding: 16px 24px;
+  cursor: pointer;
+  align-self: flex-start;
+  width: auto;
+  box-shadow: 0 8px 18px rgba(47, 107, 255, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.ps__form .cta-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(47, 107, 255, 0.4);
+}
+
+.ps__form .cta-btn:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 6px 14px rgba(47, 107, 255, 0.3);
+}
+
+.ps__form .cta-btn:focus-visible {
+  outline: 3px solid var(--sky);
+  outline-offset: 2px;
+}
