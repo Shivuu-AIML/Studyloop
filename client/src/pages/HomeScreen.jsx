@@ -190,6 +190,17 @@ export default function HomeScreen() {
               >
                 Add topics for your exam
               </button>
+              <div className="home__steps">
+                <span>
+                  <b>1</b> Paste your syllabus
+                </span>
+                <span>
+                  <b>2</b> AI maps the topics
+                </span>
+                <span>
+                  <b>3</b> Study day by day
+                </span>
+              </div>
             </section>
           </main>
         </div>

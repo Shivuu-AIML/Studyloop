@@ -10,6 +10,7 @@ import ProgressScreen from './ProgressScreen';
 import PracticeScreen from './PracticeScreen';
 import MyPlanScreen from './MyPlanScreen';
 import SettingsScreen from './SettingsScreen';
+import { fmtDay, studyDaysLeft } from '../utils/dates';
 import './DashboardScreen.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -22,8 +23,6 @@ const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 const dayHrs = (d) => d.tasks.reduce((s, t) => s + (t.estHours || 0), 0);
 const fmtH = (h) => `${Math.round(h * 2) / 2}h`;
-const fmtMon = (d) =>
-  d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 const pct = (part, whole) => (whole ? Math.round((part / whole) * 100) : 0);
 
 function useFocusTimer() {
@@ -423,6 +422,7 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
 
   const [view, setView] = useState('dashboard');
   const [activeNav, setActiveNav] = useState('dashboard');
+  const [unplacedNote, setUnplacedNote] = useState(0);
   const [quizTask, setQuizTask] = useState(null);
   const [helpOpen, setHelpOpen] = useState(false);
   const [addTopicOpen, setAddTopicOpen] = useState(false);
@@ -478,6 +478,26 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
         body: JSON.stringify({ status }),
       });
       if (!res.ok) throw new Error('request failed');
+      const { schedule, unplaced } = await res.json();
+      setDays(Array.isArray(schedule) ? schedule : []);
+      setFetchError('');
+      setUnplacedNote(unplaced > 0 ? unplaced : 0);
+    } catch {
+      setFetchError("Couldn't save that. Check your connection and try again.");
+    }
+  };
+
+  const patchTask = async (dayIndex, taskId, status) => {
+    try {
+      const res = await fetch(
+        `${API_URL}/api/plans/${id}/day/${dayIndex}/task/${taskId}`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status }),
+        }
+      );
+      if (!res.ok) throw new Error('request failed');
       const { schedule } = await res.json();
       setDays(Array.isArray(schedule) ? schedule : []);
       setFetchError('');
@@ -497,7 +517,9 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
       )
     : 0;
   const today = days.find((d) => d.dayIndex === todayIdx) || null;
-  const comingUp = days.filter((d) => d.dayIndex > todayIdx).slice(0, 3);
+  const comingUp = days
+    .filter((d) => d.dayIndex > todayIdx && d.tasks.length > 0)
+    .slice(0, 3);
 
   const allTasks = days.flatMap((d) => d.tasks);
   const doneCount = allTasks.filter((t) => t.status === 'done').length;
@@ -563,15 +585,14 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
     plan?.examDate && !Number.isNaN(new Date(plan.examDate).getTime())
       ? new Date(plan.examDate)
       : null;
-  const daysLeft = exam
-    ? Math.max(
-        0,
-        Math.ceil(
-          (startOfDay(exam).getTime() - startOfDay(new Date()).getTime()) /
-            MS_DAY
-        )
-      )
-    : null;
+  const examInfo = studyDaysLeft(plan?.examDate);
+  const chipLabel = examInfo.past
+    ? 'Exam passed'
+    : examInfo.sameDay
+      ? 'Exam today'
+      : examInfo.daysToExam === 1
+        ? '1 day to exam'
+        : `${examInfo.studyDays} study ${examInfo.studyDays === 1 ? 'day' : 'days'} left`;
 
   const hour = new Date().getHours();
   const greeting =
@@ -715,10 +736,10 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
                   <p>Here's your study loop for today.</p>
                 </div>
                 <div className="hd-actions">
-                  {daysLeft !== null && (
-                    <div className="chip">
+                  {examInfo.studyDays !== null && (
+                    <div className="chip" title={exam ? `Exam on ${fmtDay(exam)}` : undefined}>
                       <i aria-hidden="true" />
-                      Exam in {daysLeft} {daysLeft === 1 ? 'day' : 'days'}
+                      {chipLabel}
                     </div>
                   )}
                   <button
@@ -800,6 +821,25 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
               </section>
             )}
 
+            {unplacedNote > 0 && (
+              <section className="c alert" role="status">
+                <div className="ic">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M12 9v4M12 17h.01" />
+                    <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3>Some work didn't fit</h3>
+                  <p>
+                    About {unplacedNote}h of topics couldn't be scheduled before
+                    your exam — they were left out rather than breaking your
+                    daily limit.
+                  </p>
+                </div>
+              </section>
+            )}
+
             <section className="c st">
               <div className="top">
                 Topics covered
@@ -817,7 +857,7 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
 
             <section className="c st">
               <div className="top">
-                Days left
+                Study days left
                 <span className="ico">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <rect x="3" y="5" width="18" height="16" rx="3" />
@@ -826,11 +866,17 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
                 </span>
               </div>
               <div className="v">
-                {daysLeft === null ? '–' : daysLeft}{' '}
-                <small>{daysLeft === null ? 'unavailable' : daysLeft === 1 ? 'day' : 'days'}</small>
+                {examInfo.studyDays === null ? '–' : examInfo.studyDays}{' '}
+                <small>
+                  {examInfo.studyDays === null
+                    ? 'unavailable'
+                    : examInfo.studyDays === 1
+                      ? 'study day'
+                      : 'study days'}
+                </small>
               </div>
               <div className="trend" style={{ color: 'var(--mute)' }}>
-                {exam ? `${fmtMon(exam)} · exam` : 'Exam date not set'}
+                {exam ? `Exam on ${fmtDay(exam)}` : 'Exam date not set'}
               </div>
             </section>
 
@@ -850,9 +896,13 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
                         type="button"
                         role="checkbox"
                         aria-checked={t.status === 'done'}
-                        onClick={() => {
-                          if (t.status !== 'done') patchDay(today.dayIndex, 'done');
-                        }}
+                        onClick={() =>
+                          patchTask(
+                            today.dayIndex,
+                            t._id,
+                            t.status === 'done' ? 'pending' : 'done'
+                          )
+                        }
                       >
                         <span className="bx">
                           <svg viewBox="0 0 12 12" fill="none" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -903,27 +953,31 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
                 Coming up <small>Next days</small>
               </h3>
               {comingUp.length > 0 ? (
-                comingUp.map((d) => {
-                  const dt = new Date(d.date);
-                  const first = d.tasks[0];
-                  const extra = d.tasks.length - 1;
-                  return (
-                    <div className="uc" key={d._id || d.dayIndex}>
-                      <div className="dt">
-                        <b>{dt.getDate()}</b>
-                        <span>{WEEKDAYS[dt.getDay()]}</span>
+                <div className="up__list">
+                  {comingUp.map((d) => {
+                    const dt = new Date(d.date);
+                    const first = d.tasks[0];
+                    const topicCount = new Set(
+                      d.tasks.map((t) => t.topicName)
+                    ).size;
+                    return (
+                      <div className="uc" key={d._id || d.dayIndex}>
+                        <div className="dt">
+                          <b>{dt.getDate()}</b>
+                          <span>{WEEKDAYS[dt.getDay()]}</span>
+                        </div>
+                        <div className="m">
+                          <b>{first ? first.topicName : 'No topics'}</b>
+                          <span>
+                            {topicCount}{' '}
+                            {topicCount === 1 ? 'topic' : 'topics'} ·{' '}
+                            {fmtH(dayHrs(d))} planned
+                          </span>
+                        </div>
                       </div>
-                      <div className="m">
-                        <b>{first ? first.topicName : 'No topics'}</b>
-                        <span>
-                          {d.tasks.length} {d.tasks.length === 1 ? 'topic' : 'topics'} ·{' '}
-                          {fmtH(dayHrs(d))}
-                          {extra > 0 ? ` · +${extra} more` : ''}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </div>
               ) : (
                 <EmptyState message="Nothing left on the schedule — you're basically ready for your exam." />
               )}
@@ -983,12 +1037,16 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
             className={activeNav === item.key ? 'on' : ''}
             type="button"
             aria-label={item.label}
+            aria-current={activeNav === item.key ? 'page' : undefined}
             onClick={() => {
               setActiveNav(item.key);
               setView(item.view);
             }}
           >
             <NavIcon>{item.icon}</NavIcon>
+            <span className="bnav-label" aria-hidden="true">
+              {item.label}
+            </span>
           </button>
         ))}
       </nav>

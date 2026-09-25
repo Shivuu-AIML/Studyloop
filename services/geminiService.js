@@ -41,7 +41,7 @@ async function extractTopics(syllabusText) {
 
 Return ONLY a raw JSON array. Do NOT wrap it in markdown code fences, do NOT add any explanatory text.
 Each array item must be an object with exactly these fields:
-- "name": the topic name (string)
+- "name": the topic name (string). Use a clear, exam-ready topic title. If the syllabus has sibling bullet points that are small fragments of one bigger topic, merge them into a single coherent topic. Do NOT invent topics that are not in the syllabus.
 - "subject": a short subject/category name (string). Group related topics under one subject label (e.g. if the syllabus mixes Math and Physics content, tag topics accordingly — "Algebra", "Calculus", and "Trigonometry" might all be tagged "Math"). If the syllabus covers a single subject, infer one reasonable subject name from it (e.g. "Physics") rather than defaulting everything to "General".
 - "estHours": estimated hours needed, an integer between 1 and 6
 - "difficulty": difficulty level, an integer between 1 and 5
@@ -58,10 +58,27 @@ ${syllabusText}`;
   const raw = await generateContent(prompt);
 
   const topics = parseGeminiJson(raw);
-  return (Array.isArray(topics) ? topics : []).map((t) => ({
-    ...t,
-    subject: typeof t.subject === 'string' && t.subject.trim() ? t.subject : 'General',
-  }));
+  return (Array.isArray(topics) ? topics : [])
+    .map((t) => {
+      if (!t || typeof t !== 'object') return null;
+      const name = typeof t.name === 'string' ? t.name.trim() : '';
+      const estHours = Number(t.estHours);
+      const difficulty = Number(t.difficulty);
+      return {
+        name,
+        subject:
+          typeof t.subject === 'string' && t.subject.trim()
+            ? t.subject.trim()
+            : 'General',
+        estHours: Number.isFinite(estHours)
+          ? Math.max(1, Math.min(6, Math.round(estHours)))
+          : 2,
+        difficulty: Number.isFinite(difficulty)
+          ? Math.max(1, Math.min(5, Math.round(difficulty)))
+          : 3,
+      };
+    })
+    .filter((t) => t && t.name);
 }
 
 async function generateQuiz(topicName, subject, difficulty) {

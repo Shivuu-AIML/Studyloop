@@ -128,8 +128,8 @@ export default function ProgressScreen({
                     <b>{g.subject}</b>
                     <span>
                       {g.doneH > 0
-                        ? `${fmtH(g.doneH)} / ${fmtH(g.planned)}h done`
-                        : `${fmtH(g.planned)}h planned`}
+                        ? `${fmtH(g.doneH)} / ${fmtH(g.planned)} done`
+                        : `${fmtH(g.planned)} planned`}
                     </span>
                   </div>
                   <span className="pg__subject-bar" aria-hidden="true">
@@ -149,7 +149,7 @@ export default function ProgressScreen({
         <section className="c pg__days">
           <h3>
             Planned hours per day{' '}
-            <small>up to {fmtH(maxDayHours)}h</small>
+            <small>up to {fmtH(maxDayHours)}</small>
           </h3>
           <div className="pg__chart" aria-label="Planned hours per day">
             {days.map((d) => {
