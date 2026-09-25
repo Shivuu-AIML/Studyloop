@@ -182,7 +182,7 @@ export default function ProgressScreen({
                     />
                   </div>
                   <span className="pg__col-label">
-                    {isToday ? 'Today' : `D${d.dayIndex + 1}`}
+                    Day {d.dayIndex + 1}
                   </span>
                 </div>
               );
