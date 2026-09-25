@@ -118,7 +118,7 @@ const NAV_ITEMS = [
     view: 'progress',
     icon: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
   },
-  { divider: true },
+  { divider: true, section: 'Tools' },
   {
     key: 'ai',
     label: 'AI Study Assistant',
@@ -141,7 +141,7 @@ const NAV_ITEMS = [
       </>
     ),
   },
-  { divider: true },
+  { divider: true, section: 'Utilities' },
   {
     key: 'settings',
     label: 'Settings',
@@ -422,6 +422,7 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
   const id = routeId || storedId;
 
   const [view, setView] = useState('dashboard');
+  const [activeNav, setActiveNav] = useState('dashboard');
   const [quizTask, setQuizTask] = useState(null);
   const [helpOpen, setHelpOpen] = useState(false);
   const [addTopicOpen, setAddTopicOpen] = useState(false);
@@ -537,16 +538,15 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
 
   const go = (item) => {
     if (!item.key) return;
+    if (item.key === 'help') {
+      setHelpOpen(true);
+      return;
+    }
+    setActiveNav(item.key);
     switch (item.key) {
       case 'tasks':
         setView('dashboard');
         scrollToTasks();
-        break;
-      case 'practice':
-        setView('practice');
-        break;
-      case 'help':
-        setHelpOpen(true);
         break;
       default:
         if (item.view) setView(item.view);
@@ -652,11 +652,17 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
 
           {NAV_ITEMS.map((item, i) =>
             item.divider ? (
-              <span className="sdev" key={`sdev-${i}`} role="separator" />
+              item.section ? (
+                <span className="nav-gap" key={`sdev-${i}`} role="presentation">
+                  {item.section}
+                </span>
+              ) : (
+                <span className="sdev" key={`sdev-${i}`} role="separator" />
+              )
             ) : (
               <button
                 key={item.key}
-                className={item.view && view === item.view ? 'nv on' : 'nv'}
+                className={activeNav === item.key ? 'nv on' : 'nv'}
                 type="button"
                 onClick={() => go(item)}
               >
@@ -974,10 +980,13 @@ export default function DashboardScreen({ onCreatePlan = () => {} }) {
         ).map((item) => (
           <button
             key={item.key}
-            className={view === item.view ? 'on' : ''}
+            className={activeNav === item.key ? 'on' : ''}
             type="button"
             aria-label={item.label}
-            onClick={() => setView(item.view)}
+            onClick={() => {
+              setActiveNav(item.key);
+              setView(item.view);
+            }}
           >
             <NavIcon>{item.icon}</NavIcon>
           </button>
